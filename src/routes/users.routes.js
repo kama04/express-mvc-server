@@ -6,10 +6,17 @@ const {
     putUserById,
     deleteUserById,
 } = require("../controllers/users.controller");
-router.get('/', getUsers);
-router.post('/', postUsers);
-router.get('/:id', getUserById);
-router.put('/:id', putUserById);
-router.delete('/:id', deleteUserById);
+const { basicAuth } = require("../middlewares/basicAuth");
+const { validateUserPayload } = require("../middlewares/validateUserPayload");
+const { validateIdParam } = require("../middlewares/validateIdParam");
+
+router.use(basicAuth);
+
+router.get("/", getUsers);
+router.post("/", validateUserPayload, postUsers);
+
+router.get("/:userId", validateIdParam("userId"), getUserById);
+router.put("/:userId", validateIdParam("userId"), validateUserPayload, putUserById);
+router.delete("/:userId", validateIdParam("userId"), deleteUserById);
 
 module.exports = router;
