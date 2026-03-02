@@ -1,81 +1,214 @@
-# Express MVC Server
+# Express MVC Server with Middlewares
 
-Сервер на Node.js + Express.js з модульною структурою (MVC) та текстовими відповідями.
+## Project Description
 
-## Технології
-- Node.js
-- Express.js
-- npm або Yarn
+This project is a backend server developed using **Node.js** and
+**Express.js** following the **MVC (Model--View--Controller)**
+architecture.
 
-## Встановлення
-### Варіант 1: npm
-```bash
+The server implements routing for users and articles and integrates
+multiple middlewares for:
+
+-   request logging
+-   authentication
+-   data validation
+-   access control
+-   session management
+-   global error handling
+
+All server responses are returned in **text format** for simplified
+debugging and integration.
+
+------------------------------------------------------------------------
+
+## Technologies
+
+-   Node.js
+-   Express.js
+-   express-session
+-   npm / yarn
+-   MVC architecture
+
+------------------------------------------------------------------------
+
+## Project Structure
+
+    express-mvc-server/
+    │
+    ├── src/
+    │   ├── app.js
+    │   ├── server.js
+    │   │
+    │   ├── controllers/
+    │   │   ├── root.controller.js
+    │   │   ├── users.controller.js
+    │   │   └── articles.controller.js
+    │   │
+    │   ├── routes/
+    │   │   ├── index.routes.js
+    │   │   ├── users.routes.js
+    │   │   └── articles.routes.js
+    │   │
+    │   └── middlewares/
+    │       ├── requestLogger.js
+    │       ├── basicAuth.js
+    │       ├── validateUserPayload.js
+    │       ├── validateIdParam.js
+    │       ├── articleAccess.js
+    │       └── errorHandler.js
+    │
+    ├── package.json
+    └── README.md
+
+------------------------------------------------------------------------
+
+## Installation
+
+### Clone repository
+
+``` bash
+git clone <repository-link>
+cd express-mvc-server
+```
+
+------------------------------------------------------------------------
+
+### Install dependencies
+
+Using npm:
+
+``` bash
 npm install
+```
+
+or Yarn:
+
+``` bash
+yarn
+```
+
+------------------------------------------------------------------------
+
+## Run Server
+
+``` bash
 npm run start
 ```
-Варіант 2: Yarn
 
-```bash
-yarn
+or
+
+``` bash
 yarn start
 ```
 
-Сервер стартує на: http://localhost:3000
+Server runs on:
 
-Запуск у dev-режимі (Node 18+)
-```bash
-npm run dev
-```
-Архітектура
+    http://localhost:3000
 
-src/routes — маршрути (routing)
+------------------------------------------------------------------------
 
-src/controllers — контролери (логіка відповідей)
+## Middleware Integration
 
-src/app.js — підключення middleware + routes
+### Root Route `/`
 
-src/server.js — запуск сервера
-Маршрути
-Root
+Middleware: - Request Logger
 
-GET / -> Get root route
+Logs every incoming request.
 
-Users
+------------------------------------------------------------------------
 
-GET /users -> Get users route
+### Users Routes `/users` and `/users/:userId`
 
-POST /users -> Post users route
+Middlewares: - Basic Authentication - Data Validation - ID Parameter
+Validation - Session Management
 
-User by Id
+Authentication checks the presence of an `Authorization` header.
 
-GET /users/:userId -> Get user by Id route: {userId}
+Validation ensures required fields exist in request body.
 
-PUT /users/:userId -> Put user by Id route: {userId}
+------------------------------------------------------------------------
 
-DELETE /users/:userId -> Delete user by Id route: {userId}
+### Articles Routes `/articles` and `/articles/:articleId`
 
-Articles
+Middlewares: - Article Access Control - ID Validation
 
-GET /articles -> Get articles route
+Access allowed only if request header contains:
 
-POST /articles -> Post articles route
+    x-article-role: editor
 
-Article by Id
+or
 
-GET /articles/:articleId -> Get article by Id route: {articleId}
+    x-article-role: admin
 
-PUT /articles/:articleId -> Put article by Id route: {articleId}
+------------------------------------------------------------------------
 
-DELETE /articles/:articleId -> Delete article by Id route: {articleId}
-Приклади запитів (curl)
+## API Routes
 
-```bash
+### Root
+
+    GET /
+
+Response:
+
+    Get root route
+
+------------------------------------------------------------------------
+
+### Users
+
+    GET /users
+    POST /users
+
+    GET /users/:userId
+    PUT /users/:userId
+    DELETE /users/:userId
+
+------------------------------------------------------------------------
+
+### Articles
+
+    GET /articles
+    POST /articles
+
+    GET /articles/:articleId
+    PUT /articles/:articleId
+    DELETE /articles/:articleId
+
+------------------------------------------------------------------------
+
+## Example Requests
+
+### Root
+
+``` bash
 curl http://localhost:3000/
-curl http://localhost:3000/users
-curl -X POST http://localhost:3000/users
-curl http://localhost:3000/users/123
-
-curl http://localhost:3000/articles
-curl -X POST http://localhost:3000/articles
-curl http://localhost:3000/articles/999
 ```
+
+------------------------------------------------------------------------
+
+### Users (requires Authorization header)
+
+``` bash
+curl -H "Authorization: Basic test" http://localhost:3000/users
+```
+
+Create user:
+
+``` bash
+curl -X POST -H "Authorization: Basic test" -H "Content-Type: application/json" -d "{\"username\":\"admin\",\"password\":\"123\"}" http://localhost:3000/users
+```
+
+------------------------------------------------------------------------
+
+### Articles (requires access role)
+
+``` bash
+curl -H "x-article-role: editor" http://localhost:3000/articles
+```
+
+------------------------------------------------------------------------
+
+## Error Handling
+
+Global error middleware handles unexpected server errors and returns
+text responses with appropriate HTTP status codes.
