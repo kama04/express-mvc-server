@@ -1,23 +1,23 @@
-# Express MVC Server with Middlewares
+# Express MVC Server with PUG & EJS Templates
 
 ## Project Description
 
-This project is a backend server developed using **Node.js** and
+This project is a backend server built using **Node.js** and
 **Express.js** following the **MVC (Model--View--Controller)**
 architecture.
 
-The server implements routing for users and articles and integrates
-multiple middlewares for:
+The application demonstrates:
 
--   request logging
--   authentication
--   data validation
--   access control
--   session management
--   global error handling
+-   Middleware integration
+-   Session management
+-   Authentication & access control
+-   Server-side rendering using template engines
+-   Static CSS styling
 
-All server responses are returned in **text format** for simplified
-debugging and integration.
+The server renders HTML pages using:
+
+-   **PUG** → for Users routes
+-   **EJS** → for Articles routes
 
 ------------------------------------------------------------------------
 
@@ -25,9 +25,11 @@ debugging and integration.
 
 -   Node.js
 -   Express.js
+-   PUG
+-   EJS
 -   express-session
--   npm / yarn
 -   MVC architecture
+-   npm / yarn
 
 ------------------------------------------------------------------------
 
@@ -38,24 +40,21 @@ debugging and integration.
     ├── src/
     │   ├── app.js
     │   ├── server.js
-    │   │
+    │
     │   ├── controllers/
-    │   │   ├── root.controller.js
-    │   │   ├── users.controller.js
-    │   │   └── articles.controller.js
-    │   │
     │   ├── routes/
-    │   │   ├── index.routes.js
-    │   │   ├── users.routes.js
-    │   │   └── articles.routes.js
-    │   │
-    │   └── middlewares/
-    │       ├── requestLogger.js
-    │       ├── basicAuth.js
-    │       ├── validateUserPayload.js
-    │       ├── validateIdParam.js
-    │       ├── articleAccess.js
-    │       └── errorHandler.js
+    │   ├── middlewares/
+    │
+    │   ├── views/
+    │   │   ├── users/
+    │   │   │   ├── index.pug
+    │   │   │   └── detail.pug
+    │   │   └── articles/
+    │   │       ├── index.ejs
+    │   │       └── detail.ejs
+    │
+    │   └── public/
+    │       └── styles.css
     │
     ├── package.json
     └── README.md
@@ -64,24 +63,20 @@ debugging and integration.
 
 ## Installation
 
-### Clone repository
+Clone repository:
 
 ``` bash
 git clone <repository-link>
 cd express-mvc-server
 ```
 
-------------------------------------------------------------------------
-
-### Install dependencies
-
-Using npm:
+Install dependencies:
 
 ``` bash
 npm install
 ```
 
-or Yarn:
+or
 
 ``` bash
 yarn
@@ -95,50 +90,73 @@ yarn
 npm run start
 ```
 
-or
-
-``` bash
-yarn start
-```
-
-Server runs on:
+Server runs at:
 
     http://localhost:3000
 
 ------------------------------------------------------------------------
 
-## Middleware Integration
+## Template Engines
 
-### Root Route `/`
+### Users Pages (PUG)
 
-Middleware: - Request Logger
+Routes rendered using **PUG**:
 
-Logs every incoming request.
+-   GET `/users` → Users list
+-   GET `/users/:userId` → User details
 
-------------------------------------------------------------------------
+PUG templates:
 
-### Users Routes `/users` and `/users/:userId`
-
-Middlewares: - Basic Authentication - Data Validation - ID Parameter
-Validation - Session Management
-
-Authentication checks the presence of an `Authorization` header.
-
-Validation ensures required fields exist in request body.
+    views/users/index.pug
+    views/users/detail.pug
 
 ------------------------------------------------------------------------
 
-### Articles Routes `/articles` and `/articles/:articleId`
+### Articles Pages (EJS)
 
-Middlewares: - Article Access Control - ID Validation
+Routes rendered using **EJS**:
 
-Access allowed only if request header contains:
+-   GET `/articles` → Articles list
+-   GET `/articles/:articleId` → Article details
+
+EJS templates:
+
+    views/articles/index.ejs
+    views/articles/detail.ejs
+
+------------------------------------------------------------------------
+
+## Middleware Usage
+
+### Logging
+
+Logs all incoming requests.
+
+### Authentication
+
+Applied to protected Users modification routes.
+
+### Validation
+
+Validates request body and route parameters.
+
+### Article Access Control
+
+Checks header:
 
     x-article-role: editor
 
 or
 
     x-article-role: admin
+
+### Session Management
+
+Implemented using **express-session**.
+
+### Error Handling
+
+Global error middleware handles unexpected server errors.
 
 ------------------------------------------------------------------------
 
@@ -148,18 +166,13 @@ or
 
     GET /
 
-Response:
-
-    Get root route
-
 ------------------------------------------------------------------------
 
 ### Users
 
     GET /users
-    POST /users
-
     GET /users/:userId
+    POST /users
     PUT /users/:userId
     DELETE /users/:userId
 
@@ -168,47 +181,26 @@ Response:
 ### Articles
 
     GET /articles
-    POST /articles
-
     GET /articles/:articleId
+    POST /articles
     PUT /articles/:articleId
     DELETE /articles/:articleId
 
 ------------------------------------------------------------------------
 
-## Example Requests
+## Static Files
 
-### Root
+CSS styles are served from:
 
-``` bash
-curl http://localhost:3000/
-```
+    /public/styles.css
 
 ------------------------------------------------------------------------
 
-### Users (requires Authorization header)
+## Architecture
 
-``` bash
-curl -H "Authorization: Basic test" http://localhost:3000/users
-```
+The project follows MVC:
 
-Create user:
-
-``` bash
-curl -X POST -H "Authorization: Basic test" -H "Content-Type: application/json" -d "{\"username\":\"admin\",\"password\":\"123\"}" http://localhost:3000/users
-```
-
-------------------------------------------------------------------------
-
-### Articles (requires access role)
-
-``` bash
-curl -H "x-article-role: editor" http://localhost:3000/articles
-```
-
-------------------------------------------------------------------------
-
-## Error Handling
-
-Global error middleware handles unexpected server errors and returns
-text responses with appropriate HTTP status codes.
+-   **Routes** → define endpoints
+-   **Controllers** → business logic
+-   **Views** → PUG & EJS templates
+-   **Middlewares** → security & validation

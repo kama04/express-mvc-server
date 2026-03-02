@@ -1,5 +1,11 @@
+const articles = [
+  { id: "101", title: "Express Basics", author: "Admin", body: "Intro to Express..." },
+  { id: "102", title: "MVC Pattern", author: "Bob", body: "How to structure apps..." },
+  { id: "103", title: "Templates: PUG & EJS", author: "Alice", body: "Two engines in one app!" }
+];
+
 function getArticles(req, res) {
-  res.type("text").send("Get articles route");
+  res.render("articles/index.ejs", { title: "Articles", articles });
 }
 
 function postArticles(req, res) {
@@ -8,7 +14,11 @@ function postArticles(req, res) {
 
 function getArticleById(req, res) {
   const { articleId } = req.params;
-  res.type("text").send(`Get article by Id route: ${articleId}`);
+  const article = articles.find(a => a.id === articleId);
+
+  if (!article) return res.status(404).type("text").send("Article not found");
+
+  res.render("articles/detail.ejs", { title: `Article ${articleId}`, article });
 }
 
 function putArticleById(req, res) {

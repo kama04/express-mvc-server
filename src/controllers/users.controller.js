@@ -1,5 +1,11 @@
+const users = [
+  { id: "1", username: "alice", role: "user" },
+  { id: "2", username: "bob", role: "admin" },
+  { id: "3", username: "camila", role: "editor" }
+];
+
 function getUsers(req, res) {
-  res.type("text").send("Get users route");
+    res.render("users/index.pug", { title: "Users", users });
 }
 
 function postUsers(req, res) {
@@ -8,7 +14,10 @@ function postUsers(req, res) {
 
 function getUserById(req, res) {
   const { userId } = req.params;
-  res.type("text").send(`Get user by Id route: ${userId}`);
+  const user = users.find(u => u.id === userId);
+
+  if (!user) return res.status(404).type("text").send("User not found");
+  res.render("users/detail.pug", { title: `User ${userId}`, user });
 }
 
 function putUserById(req, res) {
